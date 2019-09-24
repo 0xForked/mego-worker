@@ -7,9 +7,9 @@ import (
 
 type Outbox struct {
 	DestinationNumber string
-	TextDecoded string
-	CreatorID string
-	Class string
+	TextDecoded       string
+	CreatorID         string
+	Class             string
 }
 
 func Store(outbox Outbox) error {
@@ -20,9 +20,8 @@ func Store(outbox Outbox) error {
 	//defer the close till after the main function has finished executing
 	defer db.Close()
 	// data query insert
-	// "INSERT INTO Outbox (DestinationNumber, TextDecoded) VALUES (%s, %s)"
 	query := fmt.Sprintf(
-		"INSERT INTO tasks (title, description) VALUES ('%s', '%s')",
+		"INSERT INTO Outbox (DestinationNumber, TextDecoded) VALUES ('%s', '%s')",
 		outbox.DestinationNumber,
 		outbox.TextDecoded)
 	// perform a db.Query insert

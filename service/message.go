@@ -32,12 +32,12 @@ func SubscribeMessage() {
 	// Declaring creates a queue if it doesn't already exist, or ensures that an
 	// existing queue matches the same parameters.
 	queue, err := channel.QueueDeclare(
-		"sms_notify", 	// name
-		true,         	// durable
-		false,         // delete when unused
-		false,        	// exclusive
-		false,        	// no-wait
-		nil,          		// arguments
+		"sms_notify", // name
+		true,         // durable
+		false,        // delete when unused
+		false,        // exclusive
+		false,        // no-wait
+		nil,          // arguments
 	)
 	// if there is an error, handle it
 	helper.CheckError(err, "Failed to declare a queue")
@@ -45,9 +45,9 @@ func SubscribeMessage() {
 	// the network for consumers before receiving delivery acks.  The intent of Qos is
 	// to make sure the network buffers stay full between the server and client.
 	err = channel.Qos(
-		1,     	// prefetch count
-		0,     	// prefetch size
-		false, 		// global
+		1,     // prefetch count
+		0,     // prefetch size
+		false, // global
 	)
 	// if there is an error, handle it
 	helper.CheckError(err, "Failed to set QoS")
@@ -55,12 +55,12 @@ func SubscribeMessage() {
 	// Connection or Channel.
 	msg, err := channel.Consume(
 		queue.Name, // queue
-		"",     // consumer
-		false,  // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
+		"",         // consumer
+		false,      // auto-ack
+		false,      // exclusive
+		false,      // no-local
+		false,      // no-wait
+		nil,        // args
 	)
 	// if there is an error, handle it
 	helper.CheckError(err, "Failed to register a consumer")
@@ -75,9 +75,8 @@ func SubscribeMessage() {
 		for d := range msg {
 			// show log if new message is received
 			log.Printf("Received a message: %s", d.Body)
-			// doing action there is a new message
+			// make it happen
 			validateAction(d.Body)
-
 
 			// -----------
 			dotCount := bytes.Count(d.Body, []byte("."))
@@ -85,6 +84,7 @@ func SubscribeMessage() {
 			time.Sleep(t * time.Second)
 			// show finish message
 			log.Printf("Done")
+
 			// Ack delegates an acknowledgement through the Acknowledger interface that the
 			// client or server has finished work on a delivery.
 			d.Ack(false)
