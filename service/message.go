@@ -93,7 +93,7 @@ func SubscribeMessage() {
 	// show waiting message
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 	// We need to block the main thread so that the above thread stays
-	// on reading from msgs channel. To do that just try to read in from
+	// on reading from msg channel. To do that just try to read in from
 	// the forever channel. As long as no one writes to it we will wait here.
 	// Since we are the only ones that know of it it is guaranteed that
 	// nothing gets written in it. We could also do a busy wait here but
@@ -110,8 +110,6 @@ func validateAction(b []byte) {
 	outbox := data.Outbox{
 		DestinationNumber: fmt.Sprint(convert["phone"]),
 		TextDecoded:       fmt.Sprint(convert["message"]),
-		CreatorID:         "worker_one",
-		Class:             "-1",
 	}
 	// handle important message
 	if convert["status"] == "important" {
