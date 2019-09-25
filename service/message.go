@@ -74,7 +74,7 @@ func SubscribeMessage() {
 	go func() {
 		for d := range msg {
 			// show log if new message is received
-			log.Printf("Received a message: %s", d.Body)
+			helper.ShowMessage(fmt.Sprintf("Received a message: %s", d.Body))
 			// make it happen
 			validateAction(d.Body)
 
@@ -83,8 +83,7 @@ func SubscribeMessage() {
 			t := time.Duration(dotCount)
 			time.Sleep(t * time.Second)
 			// show finish message
-			log.Printf("Done")
-
+			helper.ShowMessage("Done")
 			// Ack delegates an acknowledgement through the Acknowledger interface that the
 			// client or server has finished work on a delivery.
 			d.Ack(false)
@@ -111,14 +110,19 @@ func validateAction(b []byte) {
 		DestinationNumber: fmt.Sprint(convert["phone"]),
 		TextDecoded:       fmt.Sprint(convert["message"]),
 	}
+
+	// handle message with gammu-smsd
+	delivery.SendToQueueTable(outbox)
+
+	// this command is can be use if gammu-smsd is not activated
 	// handle important message
-	if convert["status"] == "important" {
-		delivery.SendToDevice(outbox)
-	}
+	//if convert["status"] == "important" {
+	//	delivery.SendToDevice(outbox)
+	//}
 	// handle message as queue
-	if convert["status"] == "queue" {
-		delivery.SendToQueueTable(outbox)
-	}
+	//if convert["status"] == "queue" {
+	//	delivery.SendToQueueTable(outbox)
+	//}
 }
 
 func deserialize(b []byte) (Message, error) {
