@@ -17,6 +17,40 @@ SMS (Short Messaging Service) Worker that handle incoming queue from Message Bro
     
       ``docker-compose up -d``
       
-    rebuild with docker compose
+    build with docker compose
     
      ``docker-compose up --build``
+     
+5. Run with docker 
+    
+    build as image
+    
+    ``docker build -t {new_image_name} .`` e.g ``docker build -t mego-worker .``
+    
+    show all image
+    
+    ``docker images -a`` or ``docker image ls``
+    
+    run image as container
+    
+    ``docker run -d --name {new_container_name} {image_name}`` e.g ``docker run -d --name mego_app mego-worker``
+    
+    show all container 
+    
+    ``docker ps -a``
+    
+    show running container
+    
+    `` docker ps``
+    
+    docker container mgmt
+    
+    ``docker container {start|stop|restart} {container_name}``
+    
+    docker stats 
+    
+    ``docker stats --all {container_name}``
+    
+    open container bash
+    
+    ``docker exec -it {container_name} /bin/bash``
