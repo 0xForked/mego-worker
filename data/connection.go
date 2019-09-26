@@ -3,6 +3,7 @@ package data
 import (
 	"database/sql"
 	"github.com/aasumitro/mego-worker/helper"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/streadway/amqp"
 )
 
@@ -17,7 +18,7 @@ func MQConnection(mqConf *helper.RabbitMQConfig) (*amqp.Connection, error) {
 }
 
 // Database Connection (MySQL)
-func DBConnection(sqlConf *helper.MySQlConfig) (*sql.DB, error)  {
+func DBConnection(sqlConf *helper.MySQlConfig) (*sql.DB, error) {
 	// Open up our database connection.
 	db, err := sql.Open(sqlConf.Driver, sqlConf.URL)
 	// if there is an error opening the connection, handle it

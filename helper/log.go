@@ -15,10 +15,10 @@ func CheckError(err error, msg string) {
 
 func ShowMessage(message string) {
 	// load app conf
-	conf := GetDataConfig()
+	conf := GetConfig()
 	// validate
 	if conf.App.Debug {
 		// show if valid
-		fmt.Printf("%s", message)
+		fmt.Printf("%s \n", message)
 	}
 }

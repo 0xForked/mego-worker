@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"fmt"
 	"github.com/aasumitro/mego-worker/data"
 	"github.com/aasumitro/mego-worker/helper"
 	"sync"
@@ -25,8 +26,11 @@ func SendToDevice(outbox data.Outbox) {
 	// Wait blocks until the WaitGroup counter is zero.
 	wg.Wait()
 	// TODO make function to store sentitems data
+	//data.CreateSentMessage()
 }
 
+// this function is for send message using gammu-smsd-inject to
+// gammu database schema as queue table
 func SendToQueueTable(outbox data.Outbox) {
 	// A WaitGroup waits for a collection of goroutines to finish.
 	wg := new(sync.WaitGroup)
@@ -56,4 +60,13 @@ func SendToQueueTable(outbox data.Outbox) {
 	}
 	// exec command with goroutine
 	wg.Wait()
+}
+
+// this function is inject direct to specified table in database schema
+func StoreOutbox(outbox data.Outbox) {
+	fmt.Println("Add new record to outbox queue")
+	// store queue from MQ to queue DB
+	err := data.CreateOutboxMessage(outbox)
+	// check if query is have an error
+	helper.CheckError(err, "Failed Store Message")
 }

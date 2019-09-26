@@ -2,7 +2,6 @@ package service
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/aasumitro/mego-worker/data"
 	"github.com/aasumitro/mego-worker/delivery"
@@ -11,14 +10,21 @@ import (
 	"time"
 )
 
-// declare string map to handle queue message
-type Message map[string]interface{}
+const (
+	IMPORTANT = "important"
+	INJECT    = "inject"
+	SCHEMA    = "schema"
+)
 
-func SubscribeMessage() {
+type App struct {
+	Config *helper.Config
+}
+
+func (a *App) SubscribeMessage(config *helper.Config) {
 	// load config
-	config := helper.GetDataConfig()
+	a.Config = config
 	// make connection to rabbit mq
-	mq, _ := data.MQConnection(config.RabbitMQ)
+	mq, _ := data.MQConnection(a.Config.RabbitMQ)
 	// defer the close till after the main function has finished
 	// executing
 	defer mq.Close()
@@ -76,7 +82,7 @@ func SubscribeMessage() {
 			// show log if new message is received
 			helper.ShowMessage(fmt.Sprintf("Received a message: %s", d.Body))
 			// make it happen
-			validateAction(d.Body)
+			validateAction(d.Body, a.Config.Service.Delivery)
 
 			// -----------
 			dotCount := bytes.Count(d.Body, []byte("."))
@@ -100,35 +106,35 @@ func SubscribeMessage() {
 	<-forever
 }
 
-func validateAction(b []byte) {
+func validateAction(d []byte, deliveryMode string) {
 	// convert/deserialize data from queue
-	convert, err := deserialize(b)
+	msg, err := helper.Deserialize(d)
 	// if there is an error, handle it
 	helper.CheckError(err, "Failed deserialize message")
 	// convert to outbox model
 	outbox := data.Outbox{
-		DestinationNumber: fmt.Sprint(convert["phone"]),
-		TextDecoded:       fmt.Sprint(convert["message"]),
+		DestinationNumber: fmt.Sprint(msg["phone"]),
+		TextDecoded:       fmt.Sprint(msg["message"]),
+	}
+	// validate how to delivery the data
+	switch deliveryMode {
+	case INJECT:
+		// this command is can be use if gammu-smsd is not activated
+		// handle important message
+		if msg["status"] == IMPORTANT {
+			// sent message to device
+			delivery.SendToDevice(outbox)
+		} else {
+			// handle message with gammu-smsd
+			// handle message as queue
+			delivery.SendToQueueTable(outbox)
+		}
+	case SCHEMA:
+		// store to queue table
+		delivery.StoreOutbox(outbox)
+	default:
+		// store to queue table
+		delivery.StoreOutbox(outbox)
 	}
 
-	// handle message with gammu-smsd
-	delivery.SendToQueueTable(outbox)
-
-	// this command is can be use if gammu-smsd is not activated
-	// handle important message
-	//if convert["status"] == "important" {
-	//	delivery.SendToDevice(outbox)
-	//}
-	// handle message as queue
-	//if convert["status"] == "queue" {
-	//	delivery.SendToQueueTable(outbox)
-	//}
-}
-
-func deserialize(b []byte) (Message, error) {
-	var msg Message
-	buf := bytes.NewBuffer(b)
-	decoder := json.NewDecoder(buf)
-	err := decoder.Decode(&msg)
-	return msg, err
 }
