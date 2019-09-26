@@ -13,6 +13,10 @@ SMS (Short Messaging Service) Worker that handle incoming queue from Message Bro
  
     ``docker-compose up``
     
-    or as daemon
+    as daemon
     
       ``docker-compose up -d``
+      
+    rebuild with docker compose
+    
+     ``docker-compose up --build``
