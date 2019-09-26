@@ -1,9 +1,9 @@
 package delivery
 
 import (
-	"fmt"
 	"github.com/aasumitro/mego-worker/data"
 	"github.com/aasumitro/mego-worker/helper"
+	"log"
 	"sync"
 )
 
@@ -64,7 +64,7 @@ func SendToQueueTable(outbox data.Outbox) {
 
 // this function is inject direct to specified table in database schema
 func StoreOutbox(outbox data.Outbox) {
-	fmt.Println("Add new record to outbox queue")
+	log.Printf("Add new record to outbox queue")
 	// store queue from MQ to queue DB
 	err := data.CreateOutboxMessage(outbox)
 	// check if query is have an error
