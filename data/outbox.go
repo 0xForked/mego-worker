@@ -21,7 +21,7 @@ func CreateOutboxMessage(outbox Outbox) error {
 	defer db.Close()
 	// data query insert
 	query := fmt.Sprintf(
-		"INSERT INTO outbox (DestinationNumber, TextDecoded, CreatorID) VALUES ('%s', '%s', '%s')",
+		"INSERT INTO outbox (`DestinationNumber`, `TextDecoded`, `CreatorID`) VALUES ('%s', '%s', '%s')",
 		outbox.DestinationNumber,
 		outbox.TextDecoded,
 		config.App.Name)
@@ -48,7 +48,7 @@ func CreateSentMessage(outbox Outbox) error {
 	defer db.Close()
 	// data query insert
 	query := fmt.Sprintf(
-		"INSERT INTO sentitems (DeliveryDateTime, Text, UDH, SenderID, CreatorID, DestinationNumber, TextDecoded) VALUES ('%s', '%s')",
+		"INSERT INTO sentitems (`DeliveryDateTime`, `Text`, `UDH`, `SenderID`, `CreatorID`, `DestinationNumber`, `TextDecoded`) VALUES ('%s', '%s')",
 		outbox.DestinationNumber,
 		outbox.TextDecoded)
 	// perform a db.Query insert
